@@ -1,13 +1,14 @@
 import { useState } from 'react'
-import { FlaskConical, User, ChevronDown, ChevronUp } from 'lucide-react'
+import { User, ChevronDown, ChevronUp } from 'lucide-react'
 import type { ChatMessage as ChatMessageType, Reference } from '../types'
+import Logo from './Logo'
 import CitationPopover from './CitationPopover'
 
 interface Props {
   message: ChatMessageType
+  isBeyond?: boolean
 }
 
-// Parse citation markers like [1], [2], [3] from text
 function parseCitations(text: string, references: Reference[]) {
   const parts: Array<{ type: 'text' | 'citation'; content: string; ref?: Reference }> = []
   const regex = /\[(\d+)\]/g
@@ -31,7 +32,7 @@ function parseCitations(text: string, references: Reference[]) {
   return parts
 }
 
-export default function ChatMessage({ message }: Props) {
+export default function ChatMessage({ message, isBeyond }: Props) {
   const [showRefs, setShowRefs] = useState(false)
   const isUser = message.role === 'user'
 
@@ -39,32 +40,41 @@ export default function ChatMessage({ message }: Props) {
     <div className={`flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
       {/* Avatar */}
       <div
-        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-          isUser ? 'bg-surface-lighter' : 'bg-accent/20'
+        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500 ${
+          isUser
+            ? 'bg-surface-lighter'
+            : isBeyond
+              ? 'bg-accent/20'
+              : 'bg-surface-lighter'
         }`}
       >
         {isUser ? (
           <User className="w-4 h-4 text-text-secondary" />
         ) : (
-          <FlaskConical className="w-4 h-4 text-accent" />
+          <Logo className="h-3.5" />
         )}
       </div>
 
       {/* Bubble */}
       <div
-        className={`max-w-[75%] rounded-2xl px-4 py-3 ${
+        className={`max-w-[75%] rounded-2xl px-4 py-3 transition-all duration-500 ${
           isUser
             ? 'bg-user-bubble rounded-tr-sm'
-            : 'bg-bot-bubble rounded-tl-sm'
+            : isBeyond
+              ? 'bg-accent/[0.07] border border-accent/15 rounded-tl-sm'
+              : 'bg-bot-bubble rounded-tl-sm'
         }`}
       >
-        {/* Message content with inline citations */}
         <div className="text-sm leading-relaxed text-text-primary whitespace-pre-wrap">
           {!isUser && message.references && message.references.length > 0
             ? parseCitations(message.content, message.references).map((part, i) =>
                 part.type === 'citation' && part.ref ? (
                   <CitationPopover key={i} reference={part.ref}>
-                    <span className="inline-flex items-center justify-center px-1.5 py-0.5 mx-0.5 text-xs font-medium bg-accent/20 text-accent rounded cursor-pointer hover:bg-accent/30 transition-colors">
+                    <span className={`inline-flex items-center justify-center px-1.5 py-0.5 mx-0.5 text-xs font-medium rounded cursor-pointer transition-colors ${
+                      isBeyond
+                        ? 'bg-accent/20 text-accent hover:bg-accent/30'
+                        : 'bg-surface-lighter text-accent hover:bg-surface-hover'
+                    }`}>
                       {part.content}
                     </span>
                   </CitationPopover>
@@ -75,7 +85,7 @@ export default function ChatMessage({ message }: Props) {
             : message.content}
         </div>
 
-        {/* References section */}
+        {/* References */}
         {!isUser && message.references && message.references.length > 0 && (
           <div className="mt-3 pt-2 border-t border-border/50">
             <button
@@ -91,7 +101,7 @@ export default function ChatMessage({ message }: Props) {
                   <div key={ref.index} className="text-xs text-text-muted">
                     <span className="text-accent font-medium">[{ref.index}]</span>{' '}
                     {ref.title}
-                    {ref.page_info && <span className="text-text-muted">, {ref.page_info}</span>}
+                    {ref.page_info && <span>, {ref.page_info}</span>}
                   </div>
                 ))}
               </div>
@@ -99,7 +109,6 @@ export default function ChatMessage({ message }: Props) {
           </div>
         )}
 
-        {/* Enhancer meta */}
         {message.enhancerMeta?.decomposed && (
           <p className="text-xs text-text-muted mt-2">
             Smart Retrieval: {message.enhancerMeta.sub_queries?.length || 0} sub-queries |{' '}
@@ -107,7 +116,6 @@ export default function ChatMessage({ message }: Props) {
           </p>
         )}
 
-        {/* Token usage */}
         {message.tokenUsage && (
           <p className="text-xs text-text-muted mt-1">
             Tokens: {message.tokenUsage.prompt_tokens} in / {message.tokenUsage.candidates_tokens} out

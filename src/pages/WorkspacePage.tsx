@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { FlaskConical, ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { api } from '../api'
 import type { Store, ChatMessage } from '../types'
+import Logo from '../components/Logo'
 import KnowledgeCore from '../components/KnowledgeCore'
 import ChatArea from '../components/ChatArea'
 
@@ -85,18 +86,23 @@ export default function WorkspacePage() {
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <FlaskConical className="w-6 h-6 text-accent" />
-        <div className="flex-1 min-w-0">
-          <h1 className="text-sm font-semibold text-text-primary truncate">AVIRA</h1>
-          <p className="text-xs text-text-muted">AI Scientist</p>
-        </div>
+        <Logo className="h-5" />
       </header>
 
       {/* Workspace bar */}
-      <div className="px-5 py-2.5 border-b border-border bg-surface-light/50 shrink-0">
+      <div className={`px-5 py-2.5 border-b shrink-0 transition-all duration-500 ${
+        mode === 'augmented'
+          ? 'border-accent/30 bg-accent/5 beyond-shimmer'
+          : 'border-border bg-surface-light/50'
+      }`}>
         <span className="text-sm text-text-secondary">
           Workspace: <span className="text-text-primary font-medium">{store.display_name}</span>
           {' | '}Active Sources: <span className="text-text-primary font-medium">{docCount}</span>
+          {mode === 'augmented' && (
+            <span className="ml-3 text-xs text-accent font-medium">
+              ✦ Go Beyond
+            </span>
+          )}
         </span>
       </div>
 
@@ -112,7 +118,9 @@ export default function WorkspacePage() {
         </div>
 
         {/* Chat area */}
-        <div className="flex-1 min-w-0">
+        <div className={`flex-1 min-w-0 transition-all duration-700 ${
+          mode === 'augmented' ? 'beyond-shimmer' : ''
+        }`}>
           <ChatArea
             messages={messages}
             mode={mode}

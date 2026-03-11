@@ -26,6 +26,7 @@ export default function KnowledgeCore({ storeName, onDocCountChange, onRefresh }
   const [docs, setDocs] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
   const [enrich, setEnrich] = useState(true)
   const [menuOpen, setMenuOpen] = useState<string | null>(null)
 
@@ -48,11 +49,12 @@ export default function KnowledgeCore({ storeName, onDocCountChange, onRefresh }
 
   const handleUpload = async (file: File) => {
     setUploading(true)
+    setUploadError('')
     try {
       await api.uploadDocument(storeName, file, enrich)
       await fetchDocs()
-    } catch {
-      // could show error toast
+    } catch (e: unknown) {
+      setUploadError(e instanceof Error ? e.message : 'Upload failed')
     } finally {
       setUploading(false)
     }
@@ -136,6 +138,11 @@ export default function KnowledgeCore({ storeName, onDocCountChange, onRefresh }
 
       {/* Upload area */}
       <div className="p-4 border-t border-border">
+        {uploadError && (
+          <div className="mb-3 px-3 py-2 bg-danger/10 border border-danger/30 rounded-lg text-danger text-xs">
+            {uploadError}
+          </div>
+        )}
         <button
           onClick={handleFileSelect}
           disabled={uploading}

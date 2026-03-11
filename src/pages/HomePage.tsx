@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, FlaskConical, MoreVertical, Trash2, Grid3X3, List } from 'lucide-react'
+import { Plus, MoreVertical, Trash2, Grid3X3, List } from 'lucide-react'
 import { api } from '../api'
 import type { Store } from '../types'
+import Logo from '../components/Logo'
 
 const STORE_ICONS = ['🧬', '🔬', '📊', '🧪', '📖', '🌿', '⚗️', '🧫', '💊', '🔭']
 
@@ -67,11 +68,7 @@ export default function HomePage() {
       {/* Header */}
       <header className="flex items-center justify-between px-8 py-5 border-b border-border">
         <div className="flex items-center gap-3">
-          <FlaskConical className="w-8 h-8 text-accent" />
-          <div>
-            <h1 className="text-xl font-semibold text-text-primary">AVIRA</h1>
-            <p className="text-xs text-text-muted">AI Scientist</p>
-          </div>
+          <Logo className="h-7" />
         </div>
         <div className="flex items-center gap-3">
           <button
