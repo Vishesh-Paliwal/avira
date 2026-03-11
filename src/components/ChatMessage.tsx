@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from 'react'
-import { User, ChevronDown, ChevronUp } from 'lucide-react'
+import { type ReactNode } from 'react'
+import { User } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import type { ChatMessage as ChatMessageType, Reference } from '../types'
 import Logo from './Logo'
@@ -61,7 +61,8 @@ function CitationBadge({
   if (ref) {
     return <CitationPopover reference={ref}>{badge}</CitationPopover>
   }
-  return badge
+  // No matching reference — strip it entirely
+  return null
 }
 
 function renderWithCitations(
@@ -94,7 +95,6 @@ function renderWithCitations(
 }
 
 export default function ChatMessage({ message, isBeyond }: Props) {
-  const [showRefs, setShowRefs] = useState(false)
   const isUser = message.role === 'user'
   const references = message.references || []
   const hasRefs = !isUser && references.length > 0
@@ -182,42 +182,7 @@ export default function ChatMessage({ message, isBeyond }: Props) {
           </div>
         )}
 
-        {/* References */}
-        {hasRefs && (
-          <div className="mt-3 pt-2 border-t border-border/50">
-            <button
-              onClick={() => setShowRefs(!showRefs)}
-              className="flex items-center gap-1 text-xs text-text-muted hover:text-text-secondary transition-colors"
-            >
-              {showRefs ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-              {references.length} references
-            </button>
-            {showRefs && (
-              <div className="mt-2 space-y-1.5">
-                {references.map((ref) => (
-                  <div key={ref.index} className="text-xs text-text-muted">
-                    <span className="text-accent font-medium">[{ref.index}]</span>{' '}
-                    {ref.title}
-                    {ref.page_info && <span>, {ref.page_info}</span>}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
-        {message.enhancerMeta?.decomposed && (
-          <p className="text-xs text-text-muted mt-2">
-            Smart Retrieval: {message.enhancerMeta.sub_queries?.length || 0} sub-queries |{' '}
-            {message.enhancerMeta.deduped_chunks || 0} unique chunks
-          </p>
-        )}
-
-        {message.tokenUsage && (
-          <p className="text-xs text-text-muted mt-1">
-            Tokens: {message.tokenUsage.prompt_tokens} in / {message.tokenUsage.candidates_tokens} out
-          </p>
-        )}
       </div>
     </div>
   )

@@ -16,7 +16,7 @@ export default function WorkspacePage() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [mode, setMode] = useState<'strict' | 'augmented'>('strict')
   const [topK] = useState(10)
-  const [smart] = useState(true)
+  const [smart] = useState(false)
   const [sending, setSending] = useState(false)
   const [docCount, setDocCount] = useState(0)
   const refreshDocsRef = useRef<(() => void) | null>(null)
