@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'https://bioreactor-rag-746208330214.us-central1.run.app',
         changeOrigin: true,
         timeout: 300000,
       },
