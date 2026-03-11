@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://bioreactor-rag-746208330214.us-central1.run.app/api/:path*"
+    }
+  ]
+}
