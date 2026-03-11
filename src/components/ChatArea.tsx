@@ -60,7 +60,7 @@ export default function ChatArea({ messages, mode, onModeChange, onSend, sending
         isBeyond ? 'border-accent/20 bg-accent/5' : 'border-border bg-surface-light/30'
       }`}>
         <p className="text-xs text-text-muted text-center">
-          Lemnisca AI Scientist: {storeName}
+          {storeName} - AI Companion
         </p>
       </div>
 

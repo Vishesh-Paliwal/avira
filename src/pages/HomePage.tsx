@@ -5,11 +5,16 @@ import { api } from '../api'
 import type { Store } from '../types'
 import Logo from '../components/Logo'
 
-const STORE_ICONS = ['🧬', '🔬', '📊', '🧪', '📖', '🌿', '⚗️', '🧫', '💊', '🔭']
+const BIOREACTOR_ICON = '/bioreactor-icon.svg'
 
-function getIconForStore(index: number) {
-  return STORE_ICONS[index % STORE_ICONS.length]
-}
+const PLACEHOLDER_WORKSPACES = [
+  { name: 'Synthetic Biology', icon: '/icons/synthetic-biology.png' },
+  { name: 'Downstream Dev', icon: '/icons/downstream.png' },
+  { name: 'Scale-up', icon: '/icons/scale-up.png' },
+  { name: 'Manufacturing Ops', icon: '/icons/manufacturing-ops.png' },
+  { name: 'Quality Ops', icon: '/icons/quality-ops.png' },
+  { name: 'Computation Ops', icon: '/icons/computation-ops.png' },
+]
 
 export default function HomePage() {
   const navigate = useNavigate()
@@ -25,7 +30,7 @@ export default function HomePage() {
   const fetchStores = async () => {
     try {
       const data = await api.getStores()
-      setStores(data)
+      setStores(data.filter((s: Store) => s.display_name === 'Fermentation Dev'))
       setError('')
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to load stores')
@@ -137,14 +142,14 @@ export default function HomePage() {
             </button>
 
             {/* Store cards */}
-            {stores.map((store, i) => (
+            {stores.map((store) => (
               <div
                 key={store.name}
                 onClick={() => navigate(`/workspace/${encodeURIComponent(store.name)}`)}
                 className="relative group flex flex-col h-48 rounded-xl bg-surface-light hover:bg-surface-lighter border border-border hover:border-accent/30 transition-all cursor-pointer p-5"
               >
                 <div className="flex items-start justify-between">
-                  <span className="text-4xl">{getIconForStore(i)}</span>
+                  <img src={BIOREACTOR_ICON} alt="bioreactor" className="w-10 h-10 invert opacity-80" />
                   <button
                     onClick={(e) => {
                       e.stopPropagation()
@@ -182,17 +187,33 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
+
+            {/* Placeholder greyed-out cards */}
+            {PLACEHOLDER_WORKSPACES.map((ws) => (
+              <div
+                key={ws.name}
+                className="relative flex flex-col h-48 rounded-xl bg-surface-light/50 border border-border/50 p-5 opacity-40 cursor-not-allowed select-none"
+              >
+                <img src={ws.icon} alt={ws.name} className="w-10 h-10 invert" />
+                <div className="mt-auto">
+                  <h3 className="text-sm font-medium text-text-primary truncate">
+                    {ws.name}
+                  </h3>
+                  <p className="text-xs text-text-muted mt-1">Coming soon</p>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
           /* List view */
           <div className="space-y-2">
-            {stores.map((store, i) => (
+            {stores.map((store) => (
               <div
                 key={store.name}
                 onClick={() => navigate(`/workspace/${encodeURIComponent(store.name)}`)}
                 className="group flex items-center gap-4 p-4 rounded-xl bg-surface-light hover:bg-surface-lighter border border-border hover:border-accent/30 transition-all cursor-pointer"
               >
-                <span className="text-2xl">{getIconForStore(i)}</span>
+                <img src={BIOREACTOR_ICON} alt="bioreactor" className="w-7 h-7 invert opacity-80" />
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-medium text-text-primary truncate">
                     {store.display_name}
@@ -208,6 +229,22 @@ export default function HomePage() {
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
+              </div>
+            ))}
+
+            {/* Placeholder greyed-out list items */}
+            {PLACEHOLDER_WORKSPACES.map((ws) => (
+              <div
+                key={ws.name}
+                className="flex items-center gap-4 p-4 rounded-xl bg-surface-light/50 border border-border/50 opacity-40 cursor-not-allowed select-none"
+              >
+                <img src={ws.icon} alt={ws.name} className="w-7 h-7 invert" />
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-sm font-medium text-text-primary truncate">
+                    {ws.name}
+                  </h3>
+                  <p className="text-xs text-text-muted">Coming soon</p>
+                </div>
               </div>
             ))}
           </div>

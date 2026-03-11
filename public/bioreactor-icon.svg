@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor">
+  <!-- Top ports -->
+  <rect x="224" y="20" width="64" height="40" rx="6"/>
+  <rect x="148" y="30" width="50" height="30" rx="6"/>
+  <rect x="314" y="30" width="50" height="30" rx="6"/>
+  <!-- Top lid -->
+  <rect x="120" y="60" width="272" height="40" rx="8"/>
+  <!-- Vessel body -->
+  <path d="M140,100 L140,380 Q140,420 180,420 L332,420 Q372,420 372,380 L372,100 Z"/>
+  <!-- Liquid with wave -->
+  <path d="M140,260 Q200,230 256,260 Q312,290 372,260 L372,380 Q372,420 332,420 L180,420 Q140,420 140,380 Z" fill="white" opacity="0"/>
+  <path d="M140,100 L140,280 Q200,250 256,280 Q312,310 372,280 L372,100 Z" fill="white" opacity="0.15"/>
+  <!-- Bottom legs -->
+  <rect x="110" y="420" width="292" height="16" rx="8"/>
+  <rect x="130" y="436" width="20" height="40" rx="4"/>
+  <rect x="362" y="436" width="20" height="40" rx="4"/>
+</svg>
