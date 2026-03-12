@@ -55,7 +55,10 @@ export const api = {
   uploadToGcs: async (uploadUrl: string, file: File) => {
     const res = await fetch(uploadUrl, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/pdf' },
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Length': String(file.size),
+      },
       body: file,
     });
     if (!res.ok) {
