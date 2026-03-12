@@ -26,6 +26,7 @@ export default function KnowledgeCore({ storeName, onDocCountChange, onRefresh }
   const [docs, setDocs] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [uploadStatus, setUploadStatus] = useState('')
   const [uploadError, setUploadError] = useState('')
   const [enrich, setEnrich] = useState(true)
   const [menuOpen, setMenuOpen] = useState<string | null>(null)
@@ -50,13 +51,30 @@ export default function KnowledgeCore({ storeName, onDocCountChange, onRefresh }
   const handleUpload = async (file: File) => {
     setUploading(true)
     setUploadError('')
+    setUploadStatus('Getting upload URL...')
     try {
-      await api.uploadDocument(storeName, file, enrich)
+      // Step 1: Get signed URL from backend
+      const { upload_url, gcs_path } = await api.getUploadUrl(file.name)
+
+      // Step 2: Upload directly to GCS (bypasses Cloud Run size limit)
+      setUploadStatus('Uploading to cloud...')
+      await api.uploadToGcs(upload_url, file)
+
+      // Step 3: Tell backend to process the file
+      setUploadStatus(enrich ? 'Enriching PDF (this may take a few minutes)...' : 'Processing...')
+      await api.processDocument({
+        gcs_path,
+        store_name: storeName,
+        filename: file.name,
+        enrich,
+      })
+
       await fetchDocs()
     } catch (e: unknown) {
       setUploadError(e instanceof Error ? e.message : 'Upload failed')
     } finally {
       setUploading(false)
+      setUploadStatus('')
     }
   }
 
@@ -151,7 +169,7 @@ export default function KnowledgeCore({ storeName, onDocCountChange, onRefresh }
           {uploading ? (
             <>
               <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-              Uploading...
+              {uploadStatus || 'Uploading...'}
             </>
           ) : (
             <>

@@ -9,7 +9,7 @@ export default defineConfig({
       '/api': {
         target: 'https://bioreactor-rag-746208330214.us-central1.run.app',
         changeOrigin: true,
-        timeout: 300000,
+        timeout: 900000,
       },
     },
   },

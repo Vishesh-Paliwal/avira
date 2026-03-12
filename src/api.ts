@@ -29,6 +29,7 @@ export const api = {
   getDocuments: (storeName: string) =>
     request<Document[]>(`/api/stores/${storeName}/documents`),
 
+  // Legacy direct upload (for small files < 32MB)
   uploadDocument: (storeName: string, file: File, enrich: boolean) => {
     const formData = new FormData();
     formData.append('file', file);
@@ -39,6 +40,43 @@ export const api = {
       { method: 'POST', body: formData },
     );
   },
+
+  // GCS signed URL flow (for all file sizes)
+  getUploadUrl: (filename: string) =>
+    request<{ upload_url: string; gcs_path: string; bucket: string }>(
+      '/api/get-upload-url',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename }),
+      },
+    ),
+
+  uploadToGcs: async (uploadUrl: string, file: File) => {
+    const res = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/pdf' },
+      body: file,
+    });
+    if (!res.ok) {
+      throw new Error(`GCS upload failed: ${res.status}`);
+    }
+  },
+
+  processDocument: (params: {
+    gcs_path: string;
+    store_name: string;
+    filename: string;
+    enrich: boolean;
+  }) =>
+    request<{ filename: string; enriched: boolean; stats?: Record<string, number> }>(
+      '/api/process',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      },
+    ),
 
   query: (params: {
     question: string;
