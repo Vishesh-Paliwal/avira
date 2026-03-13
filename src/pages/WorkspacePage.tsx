@@ -209,16 +209,18 @@ export default function WorkspacePage() {
 
       {/* Main content */}
       <div className="flex flex-1 min-h-0">
-        {/* Left sidebar - Knowledge Core */}
+        {/* Left sidebar - Knowledge Core + Conversations */}
         <div className="w-[340px] shrink-0 border-r border-border flex flex-col">
-          <KnowledgeCore
-            storeName={decodedStoreName}
-            onDocCountChange={setDocCount}
-            onRefresh={(fn) => { refreshDocsRef.current = fn }}
-          />
+          <div className="h-1/2 border-b border-border overflow-hidden">
+            <KnowledgeCore
+              storeName={decodedStoreName}
+              onDocCountChange={setDocCount}
+              onRefresh={(fn) => { refreshDocsRef.current = fn }}
+            />
+          </div>
 
           {/* Conversation list */}
-          <div className="border-t border-border flex flex-col flex-1 min-h-0">
+          <div className="flex flex-col flex-1 min-h-0">
             <div className="flex items-center justify-between px-4 py-3">
               <span className="text-xs font-medium text-text-muted uppercase tracking-wider">Conversations</span>
               <button
