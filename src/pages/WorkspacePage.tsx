@@ -72,6 +72,7 @@ export default function WorkspacePage() {
           references: (m.metadata as Record<string, unknown>)?.references as ChatMessage['references'],
           enhancerMeta: (m.metadata as Record<string, unknown>)?.enhancerMeta as ChatMessage['enhancerMeta'],
           tokenUsage: (m.metadata as Record<string, unknown>)?.tokenUsage as ChatMessage['tokenUsage'],
+          followUps: (m.metadata as Record<string, unknown>)?.followUps as ChatMessage['followUps'],
         }))
       )
     }).catch(() => setMessages([]))
@@ -118,6 +119,7 @@ export default function WorkspacePage() {
         references: result.references,
         enhancerMeta: result.enhancer_meta,
         tokenUsage: result.token_usage,
+        followUps: result.follow_ups,
       }
       setMessages((prev) => [...prev, assistantMsg])
 
@@ -126,6 +128,7 @@ export default function WorkspacePage() {
         references: result.references,
         enhancerMeta: result.enhancer_meta,
         tokenUsage: result.token_usage,
+        followUps: result.follow_ups,
       }).catch(() => {})
     } catch (e: unknown) {
       const errorMsg: ChatMessage = {

@@ -25,8 +25,17 @@ function processContent(
   references.forEach((ref) => chunkRefs.set(ref.index, ref))
 
   // Remove [Chunk X, Y, ...] patterns and replace with numbered citations
-  const cleaned = text.replace(
+  let cleaned = text.replace(
     /\[Chunk\s+([\d,\s]+)\]/gi,
+    (_match, nums: string) => {
+      const indices = nums.split(',').map((n: string) => n.trim()).filter(Boolean)
+      return indices.map((n: string) => `[${n}]`).join('')
+    }
+  )
+
+  // Split [N,N,N] comma-separated citations into individual [N] badges
+  cleaned = cleaned.replace(
+    /\[([\d]+(?:\s*,\s*\d+)+)\]/g,
     (_match, nums: string) => {
       const indices = nums.split(',').map((n: string) => n.trim()).filter(Boolean)
       return indices.map((n: string) => `[${n}]`).join('')

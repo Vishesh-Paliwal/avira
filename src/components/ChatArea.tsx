@@ -80,8 +80,28 @@ export default function ChatArea({ messages, mode, onModeChange, onSend, sending
           </div>
         )}
 
-        {messages.map((msg) => (
-          <ChatMessage key={msg.id} message={msg} isBeyond={isBeyond} />
+        {messages.map((msg, idx) => (
+          <div key={msg.id}>
+            <ChatMessage message={msg} isBeyond={isBeyond} />
+            {/* Follow-up suggestions — only on the last assistant message */}
+            {msg.role === 'assistant' && idx === messages.length - 1 && msg.followUps && msg.followUps.length > 0 && !sending && (
+              <div className="flex flex-wrap gap-2 mt-3 ml-11">
+                {msg.followUps.map((q, i) => (
+                  <button
+                    key={i}
+                    onClick={() => onSend(q)}
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                      isBeyond
+                        ? 'border-accent/30 text-accent hover:bg-accent/10'
+                        : 'border-border text-text-secondary hover:bg-surface-lighter hover:text-text-primary'
+                    }`}
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
 
         {sending && (

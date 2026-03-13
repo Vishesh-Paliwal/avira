@@ -31,6 +31,7 @@ export interface QueryResult {
   references: Reference[];
   token_usage: TokenUsage;
   enhancer_meta?: EnhancerMeta;
+  follow_ups?: string[];
 }
 
 export interface ChatMessage {
@@ -40,6 +41,7 @@ export interface ChatMessage {
   references?: Reference[];
   enhancerMeta?: EnhancerMeta;
   tokenUsage?: TokenUsage;
+  followUps?: string[];
 }
 
 export interface Conversation {
