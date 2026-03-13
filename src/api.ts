@@ -1,9 +1,23 @@
-import type { Store, Document, QueryResult } from './types';
+import type { Store, Document, QueryResult, Conversation, Message } from './types';
+import { supabase } from './lib/supabase';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) return {};
+  return { Authorization: `Bearer ${session.access_token}` };
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, options);
+  const authHeaders = await getAuthHeaders();
+  const res = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      ...authHeaders,
+      ...options?.headers,
+    },
+  });
   if (!res.ok) {
     const body = await res.json().catch(() => null);
     throw new Error(body?.detail || `Request failed: ${res.status}`);
@@ -93,4 +107,36 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
     }),
+
+  // --- Conversation endpoints ---
+
+  getConversations: (storeName: string) =>
+    request<Conversation[]>(`/api/conversations?store_name=${encodeURIComponent(storeName)}`),
+
+  createConversation: (storeName: string, title?: string) =>
+    request<Conversation>('/api/conversations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ store_name: storeName, title: title || 'New conversation' }),
+    }),
+
+  getMessages: (conversationId: string) =>
+    request<Message[]>(`/api/conversations/${conversationId}/messages`),
+
+  addMessage: (conversationId: string, role: string, content: string, metadata?: Record<string, unknown>) =>
+    request<Message>(`/api/conversations/${conversationId}/messages`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role, content, metadata }),
+    }),
+
+  updateConversation: (conversationId: string, title: string) =>
+    request<Conversation>(`/api/conversations/${conversationId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    }),
+
+  deleteConversation: (conversationId: string) =>
+    request<{ status: string }>(`/api/conversations/${conversationId}`, { method: 'DELETE' }),
 };

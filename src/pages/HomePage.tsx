@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, MoreVertical, Trash2, Grid3X3, List } from 'lucide-react'
+import { Plus, MoreVertical, Trash2, Grid3X3, List, LogOut } from 'lucide-react'
 import { api } from '../api'
 import type { Store } from '../types'
+import { useAuth } from '../contexts/AuthContext'
 import Logo from '../components/Logo'
 
 const BIOREACTOR_ICON = '/bioreactor-icon.svg'
@@ -18,6 +19,7 @@ const PLACEHOLDER_WORKSPACES = [
 
 export default function HomePage() {
   const navigate = useNavigate()
+  const { user, signOut } = useAuth()
   const [stores, setStores] = useState<Store[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -82,6 +84,14 @@ export default function HomePage() {
           >
             <Plus className="w-4 h-4" />
             Create new
+          </button>
+          <span className="text-sm text-text-muted">{user?.email}</span>
+          <button
+            onClick={() => signOut()}
+            className="p-2 rounded-lg hover:bg-surface-lighter text-text-muted hover:text-text-primary transition-colors"
+            title="Sign out"
+          >
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>

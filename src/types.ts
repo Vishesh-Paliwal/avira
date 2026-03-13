@@ -41,3 +41,21 @@ export interface ChatMessage {
   enhancerMeta?: EnhancerMeta;
   tokenUsage?: TokenUsage;
 }
+
+export interface Conversation {
+  id: string;
+  user_id: string;
+  store_name: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Message {
+  id: string;
+  conversation_id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
