@@ -108,6 +108,7 @@ export default function WorkspacePage() {
         mode,
         top_k: topK,
         smart,
+        conversation_id: activeConversationId || undefined,
       })
 
       const assistantMsg: ChatMessage = {

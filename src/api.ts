@@ -101,6 +101,7 @@ export const api = {
     mode: string;
     top_k: number;
     smart: boolean;
+    conversation_id?: string;
   }) =>
     request<QueryResult>('/api/query', {
       method: 'POST',
