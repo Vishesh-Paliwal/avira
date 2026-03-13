@@ -61,3 +61,32 @@ export interface Message {
   metadata: Record<string, unknown>;
   created_at: string;
 }
+
+// --- Feedback types ---
+
+export interface ResponseFeedback {
+  session_id: string;
+  response_number: number;
+  tester_role?: string;
+  question_topic?: string;
+  difficulty_tier: 'easy' | 'medium' | 'hard' | 'very_complex';
+  q1_relevance: 'different_question' | 'partial' | 'exact' | 'anticipated_followup';
+  q2_scientific_accuracy: 'factually_wrong' | 'correct_direction_wrong_details' | 'correct_and_complete' | 'exceptional';
+  q3_depth: 'needed_more_equations' | 'right_depth' | 'phd_level';
+  q4_length_format: 'way_too_long' | 'slightly_long' | 'just_right' | 'too_short' | 'ignored_format';
+  q5_critical_content: 'all_present' | 'mostly_present' | 'core_missing';
+  q7_comment: string;
+  quick_score: number;
+  conversation_id?: string;
+  message_id?: string;
+}
+
+export interface PatternCheck {
+  session_id: string;
+  checkpoint: number;
+  strengths: string[];
+  weaknesses: string[];
+  confidence_vs_accuracy: 'concern' | 'minor' | 'no_issue';
+  comparison_to_usual_tool: 'better' | 'same' | 'worse' | 'mixed';
+  comparison_detail?: string;
+}

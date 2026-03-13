@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Plus, MessageSquare, Trash2 } from 'lucide-react'
 import { api } from '../api'
@@ -6,6 +6,7 @@ import type { Store, ChatMessage, Conversation } from '../types'
 import Logo from '../components/Logo'
 import KnowledgeCore from '../components/KnowledgeCore'
 import ChatArea from '../components/ChatArea'
+import PatternCheckModal from '../components/PatternCheckModal'
 
 export default function WorkspacePage() {
   const { storeName } = useParams<{ storeName: string }>()
@@ -25,6 +26,11 @@ export default function WorkspacePage() {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
   const [loadingConvos, setLoadingConvos] = useState(true)
+
+  // Feedback state
+  const sessionId = useMemo(() => crypto.randomUUID(), [])
+  const [patternCheckpoint, setPatternCheckpoint] = useState<number | null>(null)
+  const patternChecksDone = useRef(new Set<number>())
 
   // Load store
   useEffect(() => {
@@ -130,6 +136,17 @@ export default function WorkspacePage() {
         tokenUsage: result.token_usage,
         followUps: result.follow_ups,
       }).catch(() => {})
+
+      // Check if pattern check should trigger (at response #5, #10, #15)
+      const totalAssistant = messages.filter((m) => m.role === 'assistant').length + 1
+      const checkpoints = [5, 10, 15]
+      for (const cp of checkpoints) {
+        if (totalAssistant === cp && !patternChecksDone.current.has(cp)) {
+          patternChecksDone.current.add(cp)
+          setPatternCheckpoint(cp)
+          break
+        }
+      }
     } catch (e: unknown) {
       const errorMsg: ChatMessage = {
         id: crypto.randomUUID(),
@@ -273,9 +290,21 @@ export default function WorkspacePage() {
             onSend={handleSend}
             sending={sending}
             storeName={store.display_name}
+            sessionId={sessionId}
+            conversationId={activeConversationId || undefined}
           />
         </div>
       </div>
+
+      {/* Pattern Check Modal */}
+      {patternCheckpoint && (
+        <PatternCheckModal
+          sessionId={sessionId}
+          checkpoint={patternCheckpoint}
+          onClose={() => setPatternCheckpoint(null)}
+          isBeyond={mode === 'augmented'}
+        />
+      )}
     </div>
   )
 }

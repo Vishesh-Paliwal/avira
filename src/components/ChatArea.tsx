@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { Send } from 'lucide-react'
 import type { ChatMessage as ChatMessageType } from '../types'
 import ChatMessage from './ChatMessage'
+import FeedbackForm from './FeedbackForm'
 import Logo from './Logo'
 import ModeTransition from './ModeTransition'
 
@@ -12,9 +13,11 @@ interface Props {
   onSend: (question: string) => void
   sending: boolean
   storeName: string
+  sessionId: string
+  conversationId?: string
 }
 
-export default function ChatArea({ messages, mode, onModeChange, onSend, sending, storeName }: Props) {
+export default function ChatArea({ messages, mode, onModeChange, onSend, sending, storeName, sessionId, conversationId }: Props) {
   const [input, setInput] = useState('')
   const [showTransition, setShowTransition] = useState(false)
   const [pendingMode, setPendingMode] = useState<'strict' | 'augmented' | null>(null)
@@ -80,29 +83,44 @@ export default function ChatArea({ messages, mode, onModeChange, onSend, sending
           </div>
         )}
 
-        {messages.map((msg, idx) => (
-          <div key={msg.id}>
-            <ChatMessage message={msg} isBeyond={isBeyond} />
-            {/* Follow-up suggestions — only on the last assistant message */}
-            {msg.role === 'assistant' && idx === messages.length - 1 && msg.followUps && msg.followUps.length > 0 && !sending && (
-              <div className="flex flex-wrap gap-2 mt-3 ml-11">
-                {msg.followUps.map((q, i) => (
-                  <button
-                    key={i}
-                    onClick={() => onSend(q)}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                      isBeyond
-                        ? 'border-accent/30 text-accent hover:bg-accent/10'
-                        : 'border-border text-text-secondary hover:bg-surface-lighter hover:text-text-primary'
-                    }`}
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+        {messages.map((msg, idx) => {
+          const assistantNumber = msg.role === 'assistant'
+            ? messages.filter((m, i) => m.role === 'assistant' && i <= idx).length
+            : 0
+          return (
+            <div key={msg.id}>
+              <ChatMessage message={msg} isBeyond={isBeyond} />
+              {/* Follow-up suggestions — only on the last assistant message */}
+              {msg.role === 'assistant' && idx === messages.length - 1 && msg.followUps && msg.followUps.length > 0 && !sending && (
+                <div className="flex flex-wrap gap-2 mt-3 ml-11">
+                  {msg.followUps.map((q, i) => (
+                    <button
+                      key={i}
+                      onClick={() => onSend(q)}
+                      className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                        isBeyond
+                          ? 'border-accent/30 text-accent hover:bg-accent/10'
+                          : 'border-border text-text-secondary hover:bg-surface-lighter hover:text-text-primary'
+                      }`}
+                    >
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {/* Feedback form for each assistant response */}
+              {msg.role === 'assistant' && !sending && (
+                <FeedbackForm
+                  sessionId={sessionId}
+                  responseNumber={assistantNumber}
+                  conversationId={conversationId}
+                  messageId={msg.id}
+                  isBeyond={isBeyond}
+                />
+              )}
+            </div>
+          )
+        })}
 
         {sending && (
           <div className="flex items-start gap-3">

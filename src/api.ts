@@ -1,4 +1,4 @@
-import type { Store, Document, QueryResult, Conversation, Message } from './types';
+import type { Store, Document, QueryResult, Conversation, Message, ResponseFeedback, PatternCheck } from './types';
 import { supabase } from './lib/supabase';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -140,4 +140,20 @@ export const api = {
 
   deleteConversation: (conversationId: string) =>
     request<{ status: string }>(`/api/conversations/${conversationId}`, { method: 'DELETE' }),
+
+  // --- Feedback endpoints ---
+
+  submitFeedback: (feedback: ResponseFeedback) =>
+    request<Record<string, unknown>>('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(feedback),
+    }),
+
+  submitPatternCheck: (check: PatternCheck) =>
+    request<Record<string, unknown>>('/api/feedback/pattern-check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(check),
+    }),
 };
