@@ -137,6 +137,7 @@ export default function ChatArea({ messages, mode, onModeChange, onSend, sending
                   responseNumber={assistantNumber}
                   conversationId={conversationId}
                   messageId={msg.id}
+                  mode={mode}
                   isBeyond={isBeyond}
                 />
               )}

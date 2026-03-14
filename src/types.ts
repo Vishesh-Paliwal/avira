@@ -77,6 +77,7 @@ export interface ResponseFeedback {
   q5_critical_content: 'all_present' | 'mostly_present' | 'core_missing';
   q7_comment: string;
   quick_score: number;
+  mode?: string;
   conversation_id?: string;
   message_id?: string;
 }

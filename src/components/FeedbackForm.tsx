@@ -8,6 +8,7 @@ interface Props {
   responseNumber: number
   conversationId?: string
   messageId?: string
+  mode?: string
   isBeyond?: boolean
   onSubmitted?: () => void
 }
@@ -58,6 +59,7 @@ export default function FeedbackForm({
   responseNumber,
   conversationId,
   messageId,
+  mode,
   isBeyond,
   onSubmitted,
 }: Props) {
@@ -107,6 +109,7 @@ export default function FeedbackForm({
         q5_critical_content: q5 as ResponseFeedback['q5_critical_content'],
         q7_comment: comment.trim(),
         quick_score: score,
+        mode,
         conversation_id: conversationId,
         message_id: messageId,
       }
