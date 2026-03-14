@@ -17,16 +17,38 @@ interface Props {
   conversationId?: string
 }
 
+const BIO_FACTS = [
+  { emoji: '\u{1F9EB}', title: 'The Living Reactor', text: 'A single 10,000 L production fermenter can contain more individual fungal cells than there are stars in the Milky Way galaxy.' },
+  { emoji: '\u{1F300}', title: 'The Viscosity Paradox', text: 'Pseudoplastic broths are thinner where you stir them hardest \u2014 meaning the impeller literally creates its own "easy lane" through the fluid, while the rest of the tank stays thick and sluggish.' },
+  { emoji: '\u26A1', title: 'Power-Hungry at Scale', text: 'Agitation and aeration in large-scale aerobic fermenters can account for up to 70% of a bioprocess facility\u2019s total energy consumption.' },
+  { emoji: '\u{1FAE7}', title: 'Bubble Science', text: 'A smaller bubble is actually better for oxygen transfer \u2014 a 1 mm bubble has roughly 6\u00D7 the surface-area-to-volume ratio of a 6 mm bubble, which is why sparger design is so critical.' },
+  { emoji: '\u{1F344}', title: 'Fungus Changes Its Own Rules', text: 'As a fungal fermentation progresses, the organism\u2019s own growth physically changes the broth\u2019s viscosity \u2014 meaning the fluid you designed your process around at hour 0 is a completely different material by hour 48.' },
+  { emoji: '\u{1F30A}', title: 'The Mixing Time Gap', text: 'Mixing time scales roughly with vessel volume to the power of 0.3\u20130.4. Going from 10 L to 10,000 L can push mixing time from a few seconds to several minutes \u2014 long enough for cells to experience complete oxygen starvation between impeller passes.' },
+  { emoji: '\u{1F52C}', title: 'Kolmogorov\u2019s Brutal Threshold', text: 'Cells are damaged when turbulent eddies are smaller than the cell itself. The Kolmogorov microscale shrinks as you add more power, meaning you can literally stir a culture to death.' },
+  { emoji: '\u{1F48A}', title: 'Ancient Bioprocess, Modern Problem', text: 'Penicillin, first produced industrially in the 1940s, is made by a filamentous fungus whose pseudoplastic broth still challenges bioprocess engineers today using essentially the same scale-up physics.' },
+]
+
 export default function ChatArea({ messages, mode, onModeChange, onSend, sending, storeName, sessionId, conversationId }: Props) {
   const [input, setInput] = useState('')
   const [showTransition, setShowTransition] = useState(false)
   const [pendingMode, setPendingMode] = useState<'strict' | 'augmented' | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const [factIndex, setFactIndex] = useState(() => Math.floor(Math.random() * BIO_FACTS.length))
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Rotate facts every 6 seconds while loading
+  useEffect(() => {
+    if (!sending) return
+    setFactIndex(Math.floor(Math.random() * BIO_FACTS.length))
+    const interval = setInterval(() => {
+      setFactIndex((prev) => (prev + 1) % BIO_FACTS.length)
+    }, 6000)
+    return () => clearInterval(interval)
+  }, [sending])
 
   const handleModeSwitch = (newMode: 'strict' | 'augmented') => {
     if (newMode === mode) return
@@ -129,13 +151,21 @@ export default function ChatArea({ messages, mode, onModeChange, onSend, sending
             }`}>
               <Logo className="h-3.5" />
             </div>
-            <div className={`rounded-2xl rounded-tl-sm px-4 py-3 transition-colors duration-500 ${
+            <div className={`max-w-[75%] rounded-2xl rounded-tl-sm px-4 py-3 transition-colors duration-500 ${
               isBeyond ? 'bg-accent/10 border border-accent/20' : 'bg-bot-bubble'
             }`}>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 mb-2">
                 <div className={`w-2 h-2 rounded-full animate-bounce ${isBeyond ? 'bg-accent' : 'bg-text-muted'}`} style={{ animationDelay: '0ms' }} />
                 <div className={`w-2 h-2 rounded-full animate-bounce ${isBeyond ? 'bg-beyond-2' : 'bg-text-muted'}`} style={{ animationDelay: '150ms' }} />
                 <div className={`w-2 h-2 rounded-full animate-bounce ${isBeyond ? 'bg-beyond-3' : 'bg-text-muted'}`} style={{ animationDelay: '300ms' }} />
+              </div>
+              <div className="text-xs text-text-muted leading-relaxed">
+                <span className="mr-1.5">{BIO_FACTS[factIndex].emoji}</span>
+                <span className={`font-medium ${isBeyond ? 'text-accent/80' : 'text-text-secondary'}`}>
+                  {BIO_FACTS[factIndex].title}
+                </span>
+                <span className="mx-1.5">&mdash;</span>
+                {BIO_FACTS[factIndex].text}
               </div>
             </div>
           </div>
