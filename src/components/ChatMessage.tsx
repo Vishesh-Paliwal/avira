@@ -89,6 +89,13 @@ function renderWithCitations(
   let key = 0
 
   while ((match = regex.exec(text)) !== null) {
+    // Skip if [N] is embedded within a word (letter before or after)
+    const charBefore = match.index > 0 ? text[match.index - 1] : ''
+    const charAfter = text[regex.lastIndex] || ''
+    if (/[a-zA-Z]/.test(charBefore) || /[a-zA-Z]/.test(charAfter)) {
+      continue
+    }
+
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index))
     }
