@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, MoreVertical, Trash2, Grid3X3, List, LogOut } from 'lucide-react'
+import { Plus, MoreVertical, Trash2, Grid3X3, List, LogOut, Settings } from 'lucide-react'
 import { api } from '../api'
 import type { Store } from '../types'
 import { useAuth } from '../contexts/AuthContext'
@@ -78,6 +78,13 @@ export default function HomePage() {
           <Logo className="h-7" />
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/prompts')}
+            className="flex items-center gap-2 px-4 py-2 border border-border hover:bg-surface-lighter text-text-secondary hover:text-text-primary rounded-lg transition-colors text-sm font-medium"
+          >
+            <Settings className="w-4 h-4" />
+            System Prompts
+          </button>
           <button
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-light text-white rounded-lg transition-colors text-sm font-medium"

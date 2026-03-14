@@ -129,12 +129,16 @@ export default function WorkspacePage() {
       }
       setMessages((prev) => [...prev, assistantMsg])
 
-      // Save assistant message with metadata
+      // Save assistant message with metadata, then update local ID to real DB ID
       api.addMessage(activeConversationId, 'assistant', result.cited_answer, {
         references: result.references,
         enhancerMeta: result.enhancer_meta,
         tokenUsage: result.token_usage,
         followUps: result.follow_ups,
+      }).then((saved) => {
+        setMessages((prev) =>
+          prev.map((m) => m.id === assistantMsg.id ? { ...m, id: saved.id } : m)
+        )
       }).catch(() => {})
 
       // Check if pattern check should trigger (at response #5, #10, #15)

@@ -81,6 +81,21 @@ export interface ResponseFeedback {
   message_id?: string;
 }
 
+export interface SystemPrompt {
+  mode: string;
+  prompt_text: string;
+  updated_by?: string;
+  updated_at?: string;
+}
+
+export interface PromptHistoryItem {
+  id: string;
+  mode: string;
+  prompt_text: string;
+  edited_by?: string;
+  created_at: string;
+}
+
 export interface PatternCheck {
   session_id: string;
   checkpoint: number;

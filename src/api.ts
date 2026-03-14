@@ -1,4 +1,4 @@
-import type { Store, Document, QueryResult, Conversation, Message, ResponseFeedback, PatternCheck } from './types';
+import type { Store, Document, QueryResult, Conversation, Message, ResponseFeedback, PatternCheck, SystemPrompt, PromptHistoryItem } from './types';
 import { supabase } from './lib/supabase';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -156,4 +156,19 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(check),
     }),
+
+  // --- Prompt management endpoints ---
+
+  getPrompts: () =>
+    request<SystemPrompt[]>('/api/prompts'),
+
+  updatePrompt: (mode: string, promptText: string) =>
+    request<SystemPrompt>(`/api/prompts/${mode}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt_text: promptText }),
+    }),
+
+  getPromptHistory: (mode: string) =>
+    request<PromptHistoryItem[]>(`/api/prompts/${mode}/history`),
 };

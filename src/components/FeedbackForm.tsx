@@ -87,7 +87,7 @@ export default function FeedbackForm({
   }
 
   const handleSubmit = async () => {
-    if (!difficulty || !q1 || !q2 || !q3 || !q4 || !q5 || !comment.trim() || !score) {
+    if (!difficulty || !q1 || !q2 || !q3 || !q4 || !q5 || !score) {
       setError('Please fill in all required fields')
       return
     }
@@ -182,7 +182,7 @@ export default function FeedbackForm({
           {/* Q7 Comment */}
           <div>
             <label className="block text-xs font-medium text-text-secondary mb-1.5">
-              Q7. Mandatory Comment — single most important strength OR weakness *
+              Q7. Comment — single most important strength OR weakness (optional)
             </label>
             <textarea
               value={comment}
