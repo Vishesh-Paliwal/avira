@@ -32,13 +32,16 @@ export default function ChatArea({ messages, mode, onModeChange, onSend, sending
   const [input, setInput] = useState('')
   const [showTransition, setShowTransition] = useState(false)
   const [pendingMode, setPendingMode] = useState<'strict' | 'augmented' | null>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [factIndex, setFactIndex] = useState(() => Math.floor(Math.random() * BIO_FACTS.length))
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+    const container = messagesContainerRef.current
+    if (container) {
+      container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' })
+    }
+  }, [messages, sending])
 
   // Rotate facts every 6 seconds while loading
   useEffect(() => {
@@ -90,7 +93,7 @@ export default function ChatArea({ messages, mode, onModeChange, onSend, sending
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <div className={`mb-6 transition-all duration-500 ${isBeyond ? 'opacity-80' : 'opacity-30'}`}>
@@ -172,7 +175,6 @@ export default function ChatArea({ messages, mode, onModeChange, onSend, sending
           </div>
         )}
 
-        <div ref={messagesEndRef} />
       </div>
 
       {/* Mode selector + Input */}
