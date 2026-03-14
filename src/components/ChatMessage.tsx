@@ -1,6 +1,9 @@
 import { type ReactNode } from 'react'
 import { User } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 import type { ChatMessage as ChatMessageType, Reference } from '../types'
 import Logo from './Logo'
 import CitationPopover from './CitationPopover'
@@ -148,6 +151,8 @@ export default function ChatMessage({ message, isBeyond }: Props) {
         ) : (
           <div className="text-sm leading-relaxed text-text-primary prose prose-invert prose-sm max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
             <ReactMarkdown
+              remarkPlugins={[remarkMath]}
+              rehypePlugins={[rehypeKatex]}
               components={{
                 p: ({ children }) => {
                   if (!hasRefs) return <p>{children}</p>
