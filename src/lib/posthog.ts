@@ -12,8 +12,10 @@ export function initPostHog() {
     api_host: POSTHOG_HOST,
     autocapture: true,
     capture_pageview: true,
+    disable_session_recording: false,
     session_recording: {
-      recordCrossOriginIframes: false,
+      maskAllInputs: false,
+      maskTextSelector: '',
     },
   })
 }
