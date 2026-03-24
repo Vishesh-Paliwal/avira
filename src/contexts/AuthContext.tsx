@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import type { User, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
+import { posthog } from '../lib/posthog'
 
 interface AuthContextType {
   user: User | null
@@ -25,10 +26,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
+      if (event === 'SIGNED_IN' && session?.user) {
+        posthog.identify(session.user.id)
+      }
+      if (event === 'SIGNED_OUT') {
+        posthog.reset()
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -49,6 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
+    posthog.reset()
     const { error } = await supabase.auth.signOut()
     if (error) throw error
   }
